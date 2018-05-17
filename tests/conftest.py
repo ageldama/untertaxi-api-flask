@@ -1,5 +1,6 @@
 import pytest
 from untertaxi_api.app_factory import create_app
+from untertaxi_api.db import db
 
 
 @pytest.fixture(scope='session')
@@ -16,3 +17,9 @@ def flask_app():
 def flask_client(flask_app):
     "Flask test client fixture."
     return flask_app.test_client()
+
+
+@pytest.fixture
+def empty_db(flask_app):
+    db.create_all()
+    return db
