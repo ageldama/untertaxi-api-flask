@@ -101,5 +101,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+#
+/untertaxi.sqlite
 
 # End of https://www.gitignore.io/api/python

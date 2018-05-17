@@ -8,7 +8,7 @@ class LocalhostSettings(object):
     """Default Configuration"""
     SECRET_KEY = 'default-secret-key'
     SERVER_NAME = 'localhost'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///untertaxi.sqlite'
     TESTING = False
     DEBUG = True
 
