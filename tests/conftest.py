@@ -5,7 +5,7 @@ from untertaxi_api.app_factory import create_app
 @pytest.fixture(scope='session')
 def flask_app():
     "Flask app instance fixture."
-    app = create_app()
+    app = create_app('testing')
     app_context = app.app_context()
     app_context.push()
     yield app

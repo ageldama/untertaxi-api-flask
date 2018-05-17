@@ -4,7 +4,23 @@ Configuration object definition.
 """
 
 
-class DefaultSettings(object):
+class LocalhostSettings(object):
     """Default Configuration"""
-    DEBUG = True
     SECRET_KEY = 'default-secret-key'
+    SERVER_NAME = 'localhost'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    TESTING = False
+    DEBUG = True
+
+
+class TestingSettings(LocalhostSettings):
+    TESTING = True
+    DEBUG = True
+    SERVER_NAME = 'localhost'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+
+
+CONFIGS = {
+    '': LocalhostSettings(),
+    'testing': TestingSettings(),
+}
