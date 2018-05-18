@@ -7,6 +7,8 @@ db = SQLAlchemy()
 
 
 class Member(db.Model):
+    """회원 (택시, 승객 모두)"""
+
     __tablename__ = 'members'
 
     id = db.Column('id', db.Integer, db.Sequence('members_id_seq'),
