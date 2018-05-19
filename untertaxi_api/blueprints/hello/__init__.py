@@ -1,7 +1,7 @@
 """
 Basic "Hello!" API blueprint.
 """
-from flask import Blueprint
+from flask import Blueprint, make_response
 from ...auth import auth
 
 
@@ -31,4 +31,7 @@ def restricted():
       200:
         description: A nice greeting message in text/html
     """
-    return "Hello! ???"
+    mesg = "Hello! [{}]".format(auth.username())
+    resp = make_response(mesg)
+    resp.headers['X-UnterTaxi-Tracing-Username'] = auth.username()
+    return resp

@@ -30,6 +30,7 @@ def test_restricted(flask_client, auth_helpers, empty_db):
                                 headers=auth_helpers.add_http_authz_header_base64(
                                     Headers(), username, password))
         assert resp.status_code == 200
+        assert resp.headers['X-UnterTaxi-Tracing-Username'] == username
         Member.get_password_of_email.assert_called_once_with(username)
     empty_db.session.rollback()
 
