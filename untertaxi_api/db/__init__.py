@@ -50,6 +50,10 @@ class Member(db.Model):
                                   Member.active == True).first()
 
     @classmethod
+    def count_by_email(klass, email):
+        return klass.query.filter(Member.email == email).count()
+
+    @classmethod
     def get_password_of_email(klass, email):
         member = klass.find_first_by_email(email)
         if member is None:
@@ -83,6 +87,25 @@ class MemberAddress(db.Model):
     def __init__(self, member: 'Member', address: str):
         self.address = address
         self.member_id = member.id
+
+    # ---- 데이터 접근용 ----
+
+    @classmethod
+    def find_all_by_email(klass, email):
+        member = Member.find_first_by_email(email)
+        assert member is not None
+        return MemberAddress.query.filter(
+            MemberAddress.member_id == member.id,
+            MemberAddress.active == True
+        ).order_by(MemberAddress.created_at).all()
+
+    @classmethod
+    def deactivate(klass, address_id):
+        MemberAddress.query.filter(
+            MemberAddress.id == address_id
+        ).update({MemberAddress.active: False},
+                 synchronize_session=False)
+        db.session.commit()
 
 
 class RideRequestStatus(Enum):

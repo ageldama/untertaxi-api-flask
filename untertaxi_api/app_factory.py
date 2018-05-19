@@ -10,7 +10,7 @@ from flasgger import Swagger
 from flask import Flask
 
 from .auth import init_app as auth_init_app
-from .blueprints import hello
+from .blueprints import hello, api_v1
 from .config import CONFIGS
 from .db import db
 
@@ -23,6 +23,7 @@ def create_app(profile='localhost'):
     db.init_app(app=app)
     auth_init_app(app)
     app.register_blueprint(hello.BP, url_prefix='/hello')
+    app.register_blueprint(api_v1.BP, url_prefix='/v1')
     swagger = Swagger(app)
     app.logger.debug("INITED!")
     return app
