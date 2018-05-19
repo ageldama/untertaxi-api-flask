@@ -6,7 +6,7 @@ from werkzeug.datastructures import Headers
 from untertaxi_api.app_factory import create_app
 from untertaxi_api.db import db
 from untertaxi_api.password import hash_password
-
+from flask import current_app
 
 @pytest.fixture(scope='session')
 def flask_app():
@@ -34,7 +34,9 @@ class AuthHelpers(object):
     @staticmethod
     def add_http_authz_header_base64(headers: 'Headers',
                                      username: str, password: str,
-                                     secret_key: str):
+                                     secret_key = None):
+        if secret_key is None:
+            secret_key = current_app.config['SECRET_KEY']
         pw2 = hash_password(password, secret_key)
         headers.add('Authorization',
                     'Basic ' + base64.b64encode(

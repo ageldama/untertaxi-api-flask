@@ -28,8 +28,7 @@ def test_restricted(flask_client, auth_helpers):
     with patch.object(Member, 'get_password_of_email', return_value=pw2):
         resp = flask_client.get('/hello/restricted',
                                 headers=auth_helpers.add_http_authz_header_base64(
-                                    Headers(), username,
-                                    password, current_app.config['SECRET_KEY']))
+                                    Headers(), username, password))
         assert resp.status_code == 200
         Member.get_password_of_email.assert_called_once_with(username)
 
