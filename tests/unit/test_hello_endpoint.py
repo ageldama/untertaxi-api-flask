@@ -14,7 +14,7 @@ def test_hello(flask_client):
     assert resp.status_code == 200
 
 
-def test_restricted(flask_client, auth_helpers):
+def test_restricted(flask_client, auth_helpers, empty_db):
     "Test `GET /hello/restricted` endpoint"
     assert flask_client is not None
     # access denied
@@ -31,6 +31,7 @@ def test_restricted(flask_client, auth_helpers):
                                     Headers(), username, password))
         assert resp.status_code == 200
         Member.get_password_of_email.assert_called_once_with(username)
+    empty_db.session.rollback()
 
 
 def test_no_mocker(empty_db):

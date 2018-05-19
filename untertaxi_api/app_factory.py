@@ -6,12 +6,13 @@ from __future__ import print_function
 import sys
 from os import getenv
 
+from flasgger import Swagger
 from flask import Flask
 
+from .auth import init_app as auth_init_app
 from .blueprints import hello
 from .config import CONFIGS
 from .db import db
-from .auth import init_app as auth_init_app
 
 
 def create_app(profile='localhost'):
@@ -22,8 +23,8 @@ def create_app(profile='localhost'):
     db.init_app(app=app)
     auth_init_app(app)
     app.register_blueprint(hello.BP, url_prefix='/hello')
+    swagger = Swagger(app)
     app.logger.debug("INITED!")
-    #
     return app
 
 
