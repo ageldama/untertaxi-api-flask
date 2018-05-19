@@ -1,7 +1,9 @@
 from datetime import datetime
 
+from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
-from untertaxi_api.password import digested_str
+
+from ..password import hash_password
 
 db = SQLAlchemy()
 
@@ -24,7 +26,17 @@ class Member(db.Model):
 
     def __init__(self, email, password, member_type):
         self.email = email
-        self.password_hash = digested_str(password)
+        self.password_hash = hash_password(password, current_app.config['SECRET_KEY'])
         self.member_type = member_type
 
+    @classmethod
+    def find_first_by_email(klass, email):
+        return klass.query.filter(Member.email == email).first()
 
+    @classmethod
+    def get_password_of_email(klass, email):
+        member = klass.find_first_by_email(email)
+        if member is None:
+            return None
+        else:
+            return member.password

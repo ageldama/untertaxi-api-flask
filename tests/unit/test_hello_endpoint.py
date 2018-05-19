@@ -1,3 +1,11 @@
+from unittest.mock import ANY, patch
+
+from flask import current_app
+from werkzeug.datastructures import Headers
+
+from untertaxi_api.db import Member
+from untertaxi_api.password import hash_password
+
 
 def test_hello(flask_client):
     "Test `GET /hello/` endpoint"
@@ -6,18 +14,7 @@ def test_hello(flask_client):
     assert resp.status_code == 200
 
 
-from werkzeug.datastructures import Headers
-import base64
-
-def add_http_authz_header_base64(headers: 'Headers',
-                                 username: str, password: str):
-    headers.add('Authorization',
-                'Basic ' + base64.b64encode(
-                    bytes(username + ":" + password, 'ascii')).decode('ascii'))
-    return headers
-    
-    
-def test_restricted(flask_client):
+def test_restricted(flask_client, auth_helpers):
     "Test `GET /hello/restricted` endpoint"
     assert flask_client is not None
     # access denied
@@ -26,9 +23,20 @@ def test_restricted(flask_client):
     # login ok
     username = 'foo'
     password = 'bar'
-    resp = flask_client.get('/hello/restricted',
-                            headers=add_http_authz_header_base64(
-                                Headers(), username, password))
-    assert resp.status_code == 200
+    #
+    pw2 = hash_password(password, current_app.config['SECRET_KEY'])
+    with patch.object(Member, 'get_password_of_email', return_value=pw2):
+        resp = flask_client.get('/hello/restricted',
+                                headers=auth_helpers.add_http_authz_header_base64(
+                                    Headers(), username,
+                                    password, current_app.config['SECRET_KEY']))
+        assert resp.status_code == 200
+        Member.get_password_of_email.assert_called_once_with(username)
+
+
+def test_no_mocker(empty_db):
+    import uuid
+    username = str(uuid.uuid4())
+    assert Member.get_password_of_email(username) is None
 
 # EOF.

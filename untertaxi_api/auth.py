@@ -7,11 +7,7 @@ auth = HTTPBasicAuth()
 
 @auth.get_password
 def get_pw(email):
-    m = Member.query.filter(Member.email == email).first()
-    if m is not None:
-        return m.password
-    else:
-        return None
+    return Member.get_password_of_email(email)
 
 
 def init_app(app):
