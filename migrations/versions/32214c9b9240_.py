@@ -22,7 +22,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.Unicode(length=200), nullable=False),
     sa.Column('password_hash', sa.Unicode(length=100), nullable=True),
-    sa.Column('member_type', sa.Enum('passenger', 'driver', name='member_type'), nullable=False),
+    sa.Column('member_type', sa.Enum('PASSENGER', 'DRIVER', name='member_type'), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
