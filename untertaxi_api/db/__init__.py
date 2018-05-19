@@ -137,6 +137,17 @@ class RideRequest(db.Model):
                        db.Enum(RideRequestStatus, name='ride_request_status'),
                        nullable=False, default=RideRequestStatus.AVAILABLE)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'passenger_id': self.passenger_id,
+            'driver_id': self.driver_id,
+            'address_id': self.address_id,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'status': str(self.status)
+        }
+
     # ---- constructor ----
 
     def __init__(self, passenger: 'Member', address: 'MemberAddress'):

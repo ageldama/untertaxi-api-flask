@@ -6,7 +6,8 @@ from flask import Blueprint, jsonify, make_response, request
 from validate_email import validate_email
 
 from ...auth import auth
-from ...db import Member, MemberAddress, MemberType, db
+from ...db import (Member, MemberAddress, MemberType, RideRequest,
+                   RideRequestStatus, db)
 
 BP = Blueprint('api-v1', __name__,
                url_prefix='/v1',
@@ -97,7 +98,8 @@ def address_new():
     db.session.commit()
     # response
     return jsonify({'id': address.id})
-    
+
+
 @BP.route('/address/<address_id>', methods=['DELETE'])
 @auth.login_required
 def address_delete(address_id):
@@ -115,8 +117,31 @@ def address_delete(address_id):
     resp.status_code = 204  # NO CONTENT
     return resp
 
-# TODO: 배차요청 `POST /ride_request`
 
+@BP.route('/ride_request', methods=['POST'])
+@auth.login_required
+def ride_request_new():
+    """배차요청 `POST /ride_request`"""
+    member = Member.find_first_by_email(auth.username())
+    req_json = request.json
+    address_id = req_json['address_id']
+    address = MemberAddress.query.get(address_id)
+    if address is None:
+        raise APIException(u'주소 찾을수없음', 400)
+    #
+    ride_req = RideRequest(member, address)
+    db.session.add(ride_req)
+    db.commit()
+    #
+    return jsonify({'id': req_req.id})
+
+@BP.route('/ride_request', methods=['GET'])
+@auth.login_required
+def ride_request_list():
+
+# TODO: 회원 정보 `GET /member/<id>`
+# TODO: 주소 정보 `GET /address/<id>`
+    
 # TODO: 배차요청 목록 `GET /ride_request`
 
 # TODO: 배차요청 취소 `DELETE /ride_request/:id`
