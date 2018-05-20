@@ -25,7 +25,7 @@ def upgrade():
     sa.Column('address_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.Column('status', sa.Enum('AVAILABLE', 'BOOKED', 'ARRIVED', 'CANCELLED', name='ride_request_status'), nullable=False),
+    sa.Column('status', sa.Enum('AVAILABLE', 'ACCEPTED', 'ARRIVED', name='ride_request_status'), nullable=False),
     sa.ForeignKeyConstraint(['address_id'], ['member_addresses.id'], ),
     sa.ForeignKeyConstraint(['driver_id'], ['members.id'], ),
     sa.ForeignKeyConstraint(['passenger_id'], ['members.id'], ),

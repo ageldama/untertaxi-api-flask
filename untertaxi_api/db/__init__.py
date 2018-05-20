@@ -27,7 +27,8 @@ class Member(db.Model):
     email = db.Column('email', db.Unicode(200), nullable=False, unique=True)
     password_hash = db.Column('password_hash', db.Unicode(100), nullable=True)
     member_type = db.Column('member_type',
-                            db.Enum(MemberType, name='member_type'), nullable=False)
+                            db.Enum(MemberType, name='member_type'),
+                            nullable=False)
     created_at = db.Column('created_at', db.DateTime, nullable=False,
                            default=datetime.now())
     updated_at = db.Column('updated_at', db.DateTime, nullable=False,
@@ -42,24 +43,35 @@ class Member(db.Model):
             password, current_app.config['SECRET_KEY'])
         self.member_type = member_type
 
+    # ---- JSON ----
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'email': self.email,
+            'member_type': str(self.member_type),
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'active': self.active
+        }
+
     # ---- 데이터 접근용 ----
 
     @classmethod
-    def find_first_by_email(klass, email):
-        return klass.query.filter(Member.email == email,
-                                  Member.active == True).first()
+    def find_first_by_email(cls, email):
+        return cls.query.filter(Member.email == email,
+                                Member.active == True).first()
 
     @classmethod
-    def count_by_email(klass, email):
-        return klass.query.filter(Member.email == email).count()
+    def count_by_email(cls, email):
+        return cls.query.filter(Member.email == email).count()
 
     @classmethod
-    def get_password_of_email(klass, email):
-        member = klass.find_first_by_email(email)
+    def get_password_of_email(cls, email):
+        member = cls.find_first_by_email(email)
         if member is None:
             return None
-        else:
-            return member.password
+        return member.password
 
 
 class MemberAddress(db.Model):
@@ -88,10 +100,22 @@ class MemberAddress(db.Model):
         self.address = address
         self.member_id = member.id
 
+    # ---- JSON ----
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'member_id': self.member_id,
+            'address': self.address,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'active': self.active
+        }
+
     # ---- 데이터 접근용 ----
 
     @classmethod
-    def find_all_by_email(klass, email):
+    def find_all_by_email(cls, email):
         member = Member.find_first_by_email(email)
         assert member is not None
         return MemberAddress.query.filter(
@@ -100,7 +124,7 @@ class MemberAddress(db.Model):
         ).order_by(MemberAddress.created_at).all()
 
     @classmethod
-    def deactivate(klass, address_id):
+    def deactivate(cls, address_id):
         MemberAddress.query.filter(
             MemberAddress.id == address_id
         ).update({MemberAddress.active: False},
@@ -111,9 +135,8 @@ class MemberAddress(db.Model):
 class RideRequestStatus(Enum):
     "배차요청상태"
     AVAILABLE = "AVAILABLE"  # 배차요청하여 대기중.
-    BOOKED = "BOOKED"  # 배차성공.
+    ACCEPTED = "ACCEPTED"  # 배차성공.
     ARRIVED = "ARRIVED"  # 배차받아 도착완료.
-    CANCELLED = "CANCELLED"  # 배차요청취소.
 
 
 class RideRequest(db.Model):
@@ -137,6 +160,8 @@ class RideRequest(db.Model):
                        db.Enum(RideRequestStatus, name='ride_request_status'),
                        nullable=False, default=RideRequestStatus.AVAILABLE)
 
+    # ---- JSON ----
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -153,3 +178,18 @@ class RideRequest(db.Model):
     def __init__(self, passenger: 'Member', address: 'MemberAddress'):
         self.passenger_id = passenger.id
         self.address_id = address.id
+
+    # ---- 데이터 접근용 ----
+
+    @classmethod
+    def find_all(cls):
+        return RideRequest.query.order_by(
+            RideRequest.created_at.desc()).all()
+
+    @classmethod
+    def deactivate(cls, ride_request_id):
+        RideRequest.query.filter(
+            RideRequest.id == ride_request_id
+        ).update({RideRequest.active: False},
+                 synchronize_session=False)
+        db.session.commit()
