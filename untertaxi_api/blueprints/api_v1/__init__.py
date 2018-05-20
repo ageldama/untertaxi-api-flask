@@ -140,10 +140,10 @@ def address_deactivate(address_id):
     return resp
 
 
-@BP.route('/ride_request', methods=['POST'])
+@BP.route('/ride_request', methods=['PUT'])
 @auth.login_required
 def ride_request_new():
-    """배차요청 `POST /ride_request`"""
+    """배차요청 `PUT /ride_request`"""
     member = Member.find_first_by_email(auth.username())
     req_json = request.json
     address_id = req_json['address_id']

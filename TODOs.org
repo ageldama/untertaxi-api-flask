@@ -1,0 +1,23 @@
+* TODO README [0/3]
+  1. [ ] 기본 설치/설정
+  2. [ ] 테스트슈이트 실행
+  3. [ ] docker으로 실행
+
+* TODO README / API 설명 [0/2]
+  1. [ ] Swagger UI
+  2. [ ] HTTP Basic 로그인 방식과 비밀번호 전달 방식 설명
+
+* TODO Docker 실행 스크립트 or docker-compose
+
+* TODO API-v1 Swagger YAML, e2e 테스트 작성 [0/11]
+  1. [ ] ~PUT /member~
+  2. [ ] ~GET /member/<member_id>~
+  3. [ ] ~GET /address~
+  4. [ ] ~PUT /address~
+  5. [ ] ~GET /address/<address_id>~
+  6. [ ] ~DELETE /address/<address_id>~
+  7. [ ] ~GET /ride_request~
+  8. [ ] ~PUT /ride_request~
+  9. [ ] ~DELETE /ride_request/<ride_request_id>~
+  10. [ ] ~POST /ride_request/<ride_request_id>/accept~
+  11. [ ] ~POST /ride_request/<ride_request_id>/arrive~
