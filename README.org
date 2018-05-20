@@ -1,11 +1,11 @@
 #+TITLE: Untertaxi API
 #+AUTHOR: Jong-Hyouk Yun
 
-* 실행에 필요한것
-  1. Python 3.6+
+* 설치, 테스트, 실행
 
 ** 로컬에서 실행하려면 필요한것.
-   1. Postgres 10+
+  1. Python 3.6+
+  2. Postgres 10+
 
 ** Docker을 이용하여 실행하기 위해 필요한것.
    1. docker-compose 1.21+
@@ -39,4 +39,32 @@
       1) ~./manage.py runserver~
 
 
+
+
+
+* API 문서
+
+** 로그인 방식 설명
+   1) [HTTP Basic Authentication](https://tools.ietf.org/html/rfc2617)
+
+
+** 회원 (승객, 기사)
+
+*** 회원 가입 ~PUT /member~
+
+*** 회원 정보 ~GET /member/<member_id>~
+
+** 주소
+
+*** 주소 등록 ~PUT /address~
+*** 주소 정보 ~GET /address/<address_id>~
+*** 주소 삭제 ~DELETE /address/<address_id>~
+
+** 배차요청
+
+*** 배차요청 생성 ~PUT /ride_request~
+*** 배차요청 목록 ~GET /ride_request~
+*** 배차요청 취소 ~DELETE /ride_request/<ride_request_id>~
+*** 배차요청 승인 ~POST /ride_request/<ride_request_id>/accept~
+*** 배차요청 도착 ~POST /ride_request/<ride_request_id>/arrive~
 
