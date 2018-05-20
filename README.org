@@ -44,15 +44,54 @@
 
 * API 문서
 
-** 로그인 방식 설명
-   1) [HTTP Basic Authentication](https://tools.ietf.org/html/rfc2617)
+** 로그인 방식
+   1) [[https://tools.ietf.org/html/rfc2617][HTTP Basic Authentication]] 을 사용.
+      - 다만, ~password~ 을 서버의 ~SECRET_KEY~ 을 이용하여 SHA-256
+        해시하여 전송.
+   2) 참고 예제 ::
+                   https://github.com/ageldama/untertaxi-api-flask/blob/master/misc/new-user-and-ride-request.py#L30
+   3) 이하 로그인이 필요한 API은 항상 *로그인 필요* 으로 표시함.
+      - 로그인 실패시 HTTP응답 코드로 *401 Unauthorized*.
 
 
 ** 회원 (승객, 기사)
+   - **회원** 리소스는 ~MemberType~ enum에 따라서 승객과 기사로 구분.
+     1) 승객 :: ~PASSENGER~
+     2) 기사 :: ~DRIVER~
 
 *** 회원 가입 ~PUT /member~
+    1) 요청
+       1) 로그인 불필요.
+       2) JSON Request Body
+	  #+BEGIN_SRC javascript
+          {
+            "email":  "foo@bar.com",  // 문자열, 필수.
+            "password": "mypass",     // 문자열, 필수. 평문 비밀번호.
+            "member_type": "DRIVER"
+          }
+	  #+END_SRC
+    2) 응답
+       1) ~201~ *NO CONTENT* :: 성공. 응답본문없음.
+       2) ~400~ *BAD REQUEST* :: 실패. 응답본문없음.
+	  1) 잘못된 이메일 양식.
+	  2) 혹은 이미 가입된 이메일 주소.
+	  3) 비밀번호가 4글자 이하.
+	  4) 잘못된 회원타입(MemberType).
+	  
 
 *** 회원 정보 ~GET /member/<member_id>~
+    1) 다른 *배차요청 목록* 과 같은 API으로 얻은 ~member_id~ 에 맞는
+       회원정보를 조회할때 사용.
+    2) 요청
+       1) 로그인 필요.
+       2) 요청 본문 없음.
+       3) ~<member_id>~ path variable으로 정보를 얻고 싶은 회원 ID을
+          지정.
+    3) 응답
+       1) ~200~ *OK* :: 성공. 
+			1) JSON으로 다음과 같은 응답.
+			   #+BEGIN_SRC javascript
+			   #+END_SRC
 
 ** 주소
 

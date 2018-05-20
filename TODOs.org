@@ -7,14 +7,15 @@
 * DONE Docker 실행 스크립트 or docker-compose
   CLOSED: [2018-05-20 Sun 17:58]
 
-* TODO README / API 설명 [1/2]
+* DONE README / API 설명 [2/2]
+  CLOSED: [2018-05-20 Sun 18:32]
   1. [X] Swagger UI
      - Flask Swagger연동들 거지같고 제대로 구현된게 없어서 그냥 손으로
        API문서 쓸거다.
-  2. [ ] HTTP Basic 로그인 방식과 비밀번호 전달 방식 설명
+  2. [X] HTTP Basic 로그인 방식과 비밀번호 전달 방식 설명
 
-* TODO API-v1 Swagger YAML작성 [0/11]
-  1. [ ] ~PUT /member~
+* TODO API-v1 Swagger YAML작성 [1/11]
+  1. [X] ~PUT /member~
   2. [ ] ~GET /member/<member_id>~
   3. [ ] ~GET /address~
   4. [ ] ~PUT /address~
