@@ -1,4 +1,4 @@
-from untertaxi_api.db import MemberType
+from untertaxi_api.db import MemberType, Member
 from werkzeug.datastructures import Headers
 
 
@@ -11,13 +11,18 @@ def test_signup_email_fail(flask_client, auth_helpers, empty_db):
     assert resp.status_code == 400
 
 
-def test_signup_ok(flask_client, auth_helpers, empty_db):
+def test_signup_ok(flask_client, auth_helpers, empty_db, faker):
+    email = faker.email()
     resp = flask_client.put('/v1/member', json={
-        'email': 'foo@bar.com',
+        'email': email,
         'password': 'foobarzoospam',
         'member_type': 'DRIVER'
     })
     assert resp.status_code == 201
+    member = Member.find_first_by_email(email)
+    assert member is not None
+    assert member.member_type == MemberType.DRIVER
+    assert member.active
 
 
 def test_signup_email_existing(flask_client, auth_helpers, empty_db, member_driver_foo):

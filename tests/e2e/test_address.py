@@ -1,5 +1,8 @@
 from werkzeug.datastructures import Headers
 
+# ---- `PUT /address`
+from untertaxi_api.db import MemberAddress
+
 # ---- `GET /address/<address_id>`
 
 
@@ -33,10 +36,6 @@ def test_get_address_access_denied(flask_client, auth_helpers, empty_db,
                                    address_passenger_kim):
     resp = flask_client.get('/v1/address/' + str(address_passenger_kim.id))
     assert resp.status_code == 401
-
-
-# ---- `PUT /address`
-from untertaxi_api.db import MemberAddress
 
 
 def test_address_new_ok(flask_client, auth_helpers, member_passenger_kim, empty_db, faker):
@@ -121,6 +120,7 @@ def test_address_deactivate_ok(flask_client, auth_helpers, member_passenger_kim,
                                headers=auth_helpers.add_http_authz_header_base64_cleartext_password(
         Headers(), member_passenger_kim.email, member_passenger_kim.password_hash))
     assert resp.status_code == 204
+    assert not MemberAddress.query.get(address_passenger_kim.id).active
 
 
 def test_address_deactivate_not_found(flask_client, auth_helpers, member_passenger_kim, address_passenger_kim):

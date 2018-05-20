@@ -61,8 +61,21 @@ def faker():
     from faker import Faker
     return Faker()
 
+
 @pytest.fixture
 def member_driver_foo(empty_db, faker):
+    from untertaxi_api.db import Member, MemberType
+    email = faker.email()
+    member = Member(email, 'foobarzoo', MemberType.DRIVER)
+    empty_db.session.add(member)
+    empty_db.session.commit()
+    yield member
+    empty_db.session.delete(member)
+    empty_db.session.commit()
+
+
+@pytest.fixture
+def member_driver_bar(empty_db, faker):
     from untertaxi_api.db import Member, MemberType
     email = faker.email()
     member = Member(email, 'foobarzoo', MemberType.DRIVER)
@@ -86,6 +99,18 @@ def member_passenger_kim(empty_db, faker):
 
 
 @pytest.fixture
+def member_passenger_lee(empty_db, faker):
+    from untertaxi_api.db import Member, MemberType
+    email = faker.email()
+    member = Member(email, 'foobarzoo', MemberType.PASSENGER)
+    empty_db.session.add(member)
+    empty_db.session.commit()
+    yield member
+    empty_db.session.delete(member)
+    empty_db.session.commit()
+
+
+@pytest.fixture
 def address_passenger_kim(empty_db, member_passenger_kim, faker):
     from untertaxi_api.db import MemberAddress
     address_str = faker.address()
@@ -95,3 +120,23 @@ def address_passenger_kim(empty_db, member_passenger_kim, faker):
     yield address
     empty_db.session.delete(address)
     empty_db.session.commit()
+
+
+@pytest.fixture
+def ride_request_kim(empty_db, member_passenger_kim, address_passenger_kim):
+    from untertaxi_api.db import RideRequest
+    ride_request = RideRequest(member_passenger_kim, address_passenger_kim)
+    empty_db.session.add(ride_request)
+    empty_db.session.commit()
+    yield ride_request
+    empty_db.session.delete(ride_request)
+    empty_db.session.commit()
+
+@pytest.fixture
+def ride_request_kim_accepted_foo(empty_db, member_driver_foo, ride_request_kim):
+    from untertaxi_api.db import RideRequest, RideRequestStatus
+    ride_request_kim.driver_id = member_driver_foo.id
+    ride_request_kim.status = RideRequestStatus.ACCEPTED
+    empty_db.session.add(ride_request_kim)
+    empty_db.session.commit()
+    yield ride_request_kim

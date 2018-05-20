@@ -137,6 +137,7 @@ class RideRequestStatus(Enum):
     AVAILABLE = "AVAILABLE"  # 배차요청하여 대기중.
     ACCEPTED = "ACCEPTED"  # 배차성공.
     ARRIVED = "ARRIVED"  # 배차받아 도착완료.
+    CANCELLED = "CANCELLED"  # 배차요청취소.
 
 
 class RideRequest(db.Model):
@@ -190,6 +191,6 @@ class RideRequest(db.Model):
     def deactivate(cls, ride_request_id):
         RideRequest.query.filter(
             RideRequest.id == ride_request_id
-        ).update({RideRequest.active: False},
+        ).update({RideRequest.status: RideRequestStatus.CANCELLED},
                  synchronize_session=False)
         db.session.commit()

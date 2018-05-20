@@ -148,28 +148,6 @@ def address_deactivate(address_id):
 def ride_request_new():
     """
     배차요청
-    ---
-    tags:
-        - 배차
-        - login-required
-    parameters:
-        - in: body
-            name: body
-            schema:
-                id: User
-                required:
-                    - email
-                    - name
-                properties:
-                    email:
-                        type: string
-                        description: email for user
-                    name:
-                        type: string
-                        description: name for user
-    responses:
-        '200':
-            description: 생성한 배차요청
     """
     member = Member.find_first_by_email(auth.username())
     req_json = request.json
@@ -180,7 +158,7 @@ def ride_request_new():
     #
     ride_req = RideRequest(member, address)
     db.session.add(ride_req)
-    db.commit()
+    db.session.commit()
     #
     return jsonify({'id': ride_req.id})
 
@@ -198,7 +176,7 @@ def ride_request_list():
           '200':
             description: 배차요청 전체목록.
     """
-    return jsonify(rq.to_dict() for rq in RideRequest.find_all())
+    return jsonify([rq.to_dict() for rq in RideRequest.find_all()])
 
 
 @BP.route('/ride_request/<ride_request_id>', methods=['DELETE'])
@@ -263,6 +241,9 @@ def ride_request_accept(ride_request_id):
     # 내가 만든 배차요청인가?
     if ride_request.passenger_id == driver.id:
         raise APIException(u'기사 본인이 만든 배차요청은 본인이 배차 받을수없음.', 401)
+    # 배차승인 가능한 상태(AVAILABLE)인 요청인가?
+    if ride_request.status != RideRequestStatus.AVAILABLE:
+        raise APIException(u'배차대기상태의 요청이 아님.', 401)
     #
     ride_request.driver_id = driver.id
     ride_request.status = RideRequestStatus.ACCEPTED
@@ -302,6 +283,9 @@ def ride_request_arrive(ride_request_id):
     #
     if ride_request.driver_id != driver.id:
         raise APIException(u'내가 승인한 배차요청이 아님.', 401)
+    #
+    if ride_request.status != RideRequestStatus.ACCEPTED:
+        raise APIException(u'승인된 배차요청이 아님.', 400)
     #
     ride_request.status = RideRequestStatus.ARRIVED
     db.session.add(ride_request)
