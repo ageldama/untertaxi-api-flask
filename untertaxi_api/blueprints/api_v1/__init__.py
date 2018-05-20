@@ -45,20 +45,22 @@ def handle_api_exception(error):
 @BP.route('/member', methods=['PUT'])
 def member_signup():
     req_json = request.json
-    email = req_json['email']
-    password = req_json['password']
+    if req_json is None:
+        raise APIException(u'no json request body', 500)
+    email = req_json.get('email')
+    password = req_json.get('password')
     member_type = None
     # validations
     if not validate_email(email, check_mx=False, verify=False):
-        raise APIException(u'잘못된 이메일 형식', 400)
+        raise APIException(u'잘못된 이메일 형식 (malformed email address)', 400)
     if Member.count_by_email(email) > 0:
-        raise APIException(u'이미 가입된 이메일', 400)
-    if len(password) < 4:
+        raise APIException(u'이미 가입된 이메일 (existing member email)', 400)
+    if password is None or len(password) < 4:
         raise APIException(u'비밀번호가 4글자 이하', 400)
     try:
-        member_type = MemberType(request.form['member_type'])
+        member_type = MemberType(req_json.get('member_type'))
     except ValueError as exc:
-        raise APIException(u'잘못된 회원타입', 400)
+        raise APIException(u'잘못된 회원타입 (wrong member-type)', 400)
     #
     member = Member(email, password, member_type)
     db.session.add(member)

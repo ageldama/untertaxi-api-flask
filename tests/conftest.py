@@ -8,6 +8,7 @@ from untertaxi_api.db import db
 from untertaxi_api.password import hash_password
 from flask import current_app
 
+
 @pytest.fixture(scope='session')
 def flask_app():
     "Flask app instance fixture."
@@ -34,16 +35,36 @@ class AuthHelpers(object):
     @staticmethod
     def add_http_authz_header_base64(headers: 'Headers',
                                      username: str, password: str,
-                                     secret_key = None):
+                                     secret_key=None):
         if secret_key is None:
             secret_key = current_app.config['SECRET_KEY']
         pw2 = hash_password(password, secret_key)
+        return AuthHelpers.add_http_authz_header_base64_cleartext_password(
+            headers, username, pw2)
+
+    @staticmethod
+    def add_http_authz_header_base64_cleartext_password(headers: 'Headers',
+                                                        username: str, password: str):
         headers.add('Authorization',
                     'Basic ' + base64.b64encode(
-                        bytes(username + ":" + pw2, 'ascii')).decode('ascii'))
+                        bytes(username + ":" + password, 'ascii')).decode('ascii'))
         return headers
 
 
 @pytest.fixture(scope='session')
 def auth_helpers():
     return AuthHelpers()
+
+
+@pytest.fixture
+def member_driver_foo(empty_db):
+    from faker import Faker
+    from untertaxi_api.db import Member, MemberType
+    faker = Faker()
+    email = faker.email()
+    member = Member(email, 'foobarzoo', MemberType.DRIVER)
+    empty_db.session.add(member)
+    empty_db.session.commit()
+    yield member
+    empty_db.session.delete(member)
+    empty_db.session.commit()

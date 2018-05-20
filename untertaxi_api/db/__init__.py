@@ -49,7 +49,7 @@ class Member(db.Model):
         return {
             'id': self.id,
             'email': self.email,
-            'member_type': str(self.member_type),
+            'member_type': self.member_type.name,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
             'active': self.active
@@ -71,7 +71,7 @@ class Member(db.Model):
         member = cls.find_first_by_email(email)
         if member is None:
             return None
-        return member.password
+        return member.password_hash
 
 
 class MemberAddress(db.Model):
@@ -170,7 +170,7 @@ class RideRequest(db.Model):
             'address_id': self.address_id,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
-            'status': str(self.status)
+            'status': self.status.name
         }
 
     # ---- constructor ----
