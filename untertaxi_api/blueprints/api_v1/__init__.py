@@ -168,13 +168,6 @@ def ride_request_new():
 def ride_request_list():
     """
     배차요청목록
-    ---
-        tags:
-          - 배차
-          - login-required
-        responses:
-          '200':
-            description: 배차요청 전체목록.
     """
     return jsonify([rq.to_dict() for rq in RideRequest.find_all()])
 
@@ -184,17 +177,6 @@ def ride_request_list():
 def ride_request_deactivate(ride_request_id):
     """
     배차요청취소
-    ---
-        tags:
-          - 배차
-          - login-required
-        responses:
-          204:
-            description: 배차요청 취소처리됨.
-          400:
-            description: 해당 배차요청 없음.
-          401:
-            description: API호출 사용자가 배차요청을 만든 사용자가 아님.
     """
     #
     ride_request = RideRequest.query.get(ride_request_id)
@@ -218,17 +200,6 @@ def ride_request_deactivate(ride_request_id):
 def ride_request_accept(ride_request_id):
     """
     배차요청승인
-    ---
-        tags:
-          - 배차
-          - login-required
-        responses:
-          204:
-            description: 배차요청 승인처리됨
-          400:
-            description: 해당 배차요청 없음.
-          401:
-            description: API호출 사용자가 기사 아니거나, 자기 자신이 요청한 배차라 승인불가.
     """
     # 내가 driver?
     driver = Member.find_first_by_email(auth.username())
@@ -260,17 +231,6 @@ def ride_request_accept(ride_request_id):
 def ride_request_arrive(ride_request_id):
     """
     도착통지
-    ---
-        tags:
-          - 배차
-          - login-required
-        responses:
-          200:
-            description: 배차요청 도착처리됨.
-          400:
-            description: 해당 배차요청 찾을수없음.
-          401:
-            description: API호출 사용자가 승인한 배차가 아니거나, API호출 사용자가 기사 아님.
     """
     # 내가 driver?
     driver = Member.find_first_by_email(auth.username())
