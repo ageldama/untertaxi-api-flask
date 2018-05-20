@@ -43,8 +43,12 @@ def test_signup_empty_request(flask_client, auth_helpers, empty_db):
 
 # ---- `GET /member/<member_id>`
 
+def test_get_member_access_denied(flask_client, member_driver_foo):
+    resp = flask_client.get('/v1/member/' + str(member_driver_foo.id * 3))
+    assert resp.status_code == 401
+
 def test_get_member_not_existing(flask_client, auth_helpers, empty_db, member_driver_foo):
-    resp = flask_client.get('/v1/member/1234567',
+    resp = flask_client.get('/v1/member/' + str(member_driver_foo.id * 3),
                             headers=auth_helpers.add_http_authz_header_base64_cleartext_password(
                                 Headers(), member_driver_foo.email, member_driver_foo.password_hash))
     assert resp.status_code == 400

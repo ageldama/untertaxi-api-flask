@@ -88,7 +88,8 @@ def member_get(member_id):
 @auth.login_required
 def address_list():
     """주소 목록 `GET /address`"""
-    return MemberAddress.find_all_by_email(auth.username())
+    return jsonify([address.to_dict() for address
+                    in MemberAddress.find_all_by_email(auth.username())])
 
 
 @BP.route('/address', methods=['PUT'])
@@ -97,7 +98,7 @@ def address_new():
     """주소 등록 `PUT /address`"""
     member = Member.find_first_by_email(auth.username())
     req_json = request.json
-    address = req_json['address']
+    address = req_json.get('address')
     # validation
     if member is None:
         raise APIException(u'사용자를 찾을수없음', 401)

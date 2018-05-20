@@ -22,13 +22,13 @@
   10. [ ] ~POST /ride_request/<ride_request_id>/accept~
   11. [ ] ~POST /ride_request/<ride_request_id>/arrive~
 
-* TODO API-v1 Swagger e2e 테스트 작성 [2/11]
+* TODO API-v1 Swagger e2e 테스트 작성 [6/11]
   1. [X] ~PUT /member~
   2. [X] ~GET /member/<member_id>~
-  3. [ ] ~GET /address~
-  4. [ ] ~PUT /address~
-  5. [ ] ~GET /address/<address_id>~
-  6. [ ] ~DELETE /address/<address_id>~
+  3. [X] ~GET /address~
+  4. [X] ~PUT /address~
+  5. [X] ~GET /address/<address_id>~
+  6. [X] ~DELETE /address/<address_id>~
   7. [ ] ~GET /ride_request~
   8. [ ] ~PUT /ride_request~
   9. [ ] ~DELETE /ride_request/<ride_request_id>~

@@ -57,14 +57,41 @@ def auth_helpers():
 
 
 @pytest.fixture
-def member_driver_foo(empty_db):
+def faker():
     from faker import Faker
+    return Faker()
+
+@pytest.fixture
+def member_driver_foo(empty_db, faker):
     from untertaxi_api.db import Member, MemberType
-    faker = Faker()
     email = faker.email()
     member = Member(email, 'foobarzoo', MemberType.DRIVER)
     empty_db.session.add(member)
     empty_db.session.commit()
     yield member
     empty_db.session.delete(member)
+    empty_db.session.commit()
+
+
+@pytest.fixture
+def member_passenger_kim(empty_db, faker):
+    from untertaxi_api.db import Member, MemberType
+    email = faker.email()
+    member = Member(email, 'foobarzoo', MemberType.PASSENGER)
+    empty_db.session.add(member)
+    empty_db.session.commit()
+    yield member
+    empty_db.session.delete(member)
+    empty_db.session.commit()
+
+
+@pytest.fixture
+def address_passenger_kim(empty_db, member_passenger_kim, faker):
+    from untertaxi_api.db import MemberAddress
+    address_str = faker.address()
+    address = MemberAddress(member_passenger_kim, address_str)
+    empty_db.session.add(address)
+    empty_db.session.commit()
+    yield address
+    empty_db.session.delete(address)
     empty_db.session.commit()
