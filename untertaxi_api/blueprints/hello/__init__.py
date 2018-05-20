@@ -2,8 +2,8 @@
 Basic "Hello!" API blueprint.
 """
 from flask import Blueprint, make_response
-from ...auth import auth
 
+from ...auth import auth
 
 BP = Blueprint('hello', __name__,
                template_folder='templates')
@@ -26,7 +26,7 @@ def restricted():
     """Hello but login-required.
     ---
     tags:
-      - login-required-restricted
+      - login-required
     responses:
       200:
         description: A nice greeting message in text/html
