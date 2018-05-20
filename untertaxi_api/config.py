@@ -12,6 +12,14 @@ class LocalhostSettings(object):
     DEBUG = True
 
 
+class DockerSettings(object):
+    """Docker Configuration"""
+    SECRET_KEY = 'default-secret-key'
+    SQLALCHEMY_DATABASE_URI = 'postgres://postgres:postgres@db:5432/untertaxi_api'
+    TESTING = False
+    DEBUG = False
+
+
 class TestingSettings(LocalhostSettings):
     TESTING = True
     DEBUG = True
@@ -20,5 +28,6 @@ class TestingSettings(LocalhostSettings):
 
 CONFIGS = {
     'localhost': LocalhostSettings(),
+    'docker': DockerSettings(),
     'testing': TestingSettings(),
 }

@@ -1,0 +1,37 @@
+#+TITLE: Untertaxi API
+#+AUTHOR: Jong-Hyouk Yun
+
+* 실행에 필요한것
+  1. Python 3.6+
+
+** 로컬에서 실행하려면 필요한것.
+   1. Postgres 10+
+
+** Docker을 이용하여 실행하기 위해 필요한것.
+   1. docker-compose 1.21+
+   2. docker 18+
+
+** Virtualenv(venv)을 설정하여 로컬 실행환경 만들기
+   1. ~virtualenv -p python3 venv~ :: venv 생성.
+   2. ~source venv/bin/activate~ :: venv 활성화.
+   3. ~pip install -r requirements.txt~ :: 의존성 모듈들 venv내에
+        설치.
+
+** 로컬에서 테스트 실행
+   1. ~py.test~ :: 테스트 실행.
+		   - 테스트 실행시 SQLite3 inmem DB 사용하여 별도의
+                     데이터베이스 불필요.
+
+** 로컬에서 서버 실행
+   1. DB :: ~127.0.0.1:5432~ 에 Postgres 실행되고 있어야함.
+      1) 사용자명/패스워드는 ~postgres~ / ~postgres~.
+      2) ~untertaxi_api~ database생성 :: ~CREATE DATABASE untertaxi_api~
+   2. 데이터베이스 마이그레이션 실행.
+      1) ~./manage.py db upgrade~
+      2) 최초 한번 데이터베이스 초기화를 위해 필요하고, 이후에 서버
+         실행시는 불필요.
+   3. 서버 실행.
+      1) ~./manage.py runserver~
+
+
+

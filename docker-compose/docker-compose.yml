@@ -1,0 +1,14 @@
+version: '3'
+services:
+  db:
+    image: postgres:10-alpine
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+  web:
+    build: ..
+    volumes:
+      - ..:/app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db

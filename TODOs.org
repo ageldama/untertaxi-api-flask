@@ -1,13 +1,15 @@
-* TODO README [0/3]
-  1. [ ] 기본 설치/설정
-  2. [ ] 테스트슈이트 실행
+* TODO README [2/3]
+  1. [X] 기본 설치/설정
+  2. [X] 테스트슈이트 실행
   3. [ ] docker으로 실행
 
-* TODO README / API 설명 [0/2]
-  1. [ ] Swagger UI
-  2. [ ] HTTP Basic 로그인 방식과 비밀번호 전달 방식 설명
-
 * TODO Docker 실행 스크립트 or docker-compose
+
+* TODO README / API 설명 [1/2]
+  1. [X] Swagger UI
+     - Flask Swagger연동들 거지같고 제대로 구현된게 없어서 그냥 손으로
+       API문서 쓸거다.
+  2. [ ] HTTP Basic 로그인 방식과 비밀번호 전달 방식 설명
 
 * TODO API-v1 Swagger YAML작성 [0/11]
   1. [ ] ~PUT /member~
