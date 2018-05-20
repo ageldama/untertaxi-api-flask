@@ -1,9 +1,18 @@
 version: '3'
+
+networks:
+  mynet:
+    driver: bridge
+
 services:
   db:
     image: postgres:10-alpine
-    volumes:
-      - ./tmp/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: untertaxi_api
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - mynet
   web:
     build: ..
     volumes:
@@ -12,3 +21,7 @@ services:
       - "5000:5000"
     depends_on:
       - db
+    links:
+      - db
+    networks:
+      - mynet

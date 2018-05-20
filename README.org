@@ -11,6 +11,11 @@
    1. docker-compose 1.21+
    2. docker 18+
 
+** Docker-Compose 실행
+   1. ~cd docker-compose/~
+   2. ~docker-compose up~
+   3. http://localhost:5000 에 서버 시작되었음.
+
 ** Virtualenv(venv)을 설정하여 로컬 실행환경 만들기
    1. ~virtualenv -p python3 venv~ :: venv 생성.
    2. ~source venv/bin/activate~ :: venv 활성화.

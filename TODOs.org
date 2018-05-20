@@ -1,9 +1,11 @@
-* TODO README [2/3]
+* DONE README [3/3]
+  CLOSED: [2018-05-20 Sun 17:58]
   1. [X] 기본 설치/설정
   2. [X] 테스트슈이트 실행
-  3. [ ] docker으로 실행
+  3. [X] docker으로 실행
 
-* TODO Docker 실행 스크립트 or docker-compose
+* DONE Docker 실행 스크립트 or docker-compose
+  CLOSED: [2018-05-20 Sun 17:58]
 
 * TODO README / API 설명 [1/2]
   1. [X] Swagger UI
