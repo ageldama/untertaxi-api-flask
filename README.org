@@ -50,8 +50,10 @@
         해시하여 전송.
    2) 참고 예제 ::
                    https://github.com/ageldama/untertaxi-api-flask/blob/master/misc/new-user-and-ride-request.py#L30
-   3) 이하 로그인이 필요한 API은 항상 *로그인 필요* 으로 표시함.
-      - 로그인 실패시 HTTP응답 코드로 *401 Unauthorized*.
+   3) 이하 로그인이 필요한 API은 항상 별도로 표시하지않고,
+      1) 로그인이 불필요한 경우에만 표기한다.
+      2) 로그인 실패시 HTTP응답 코드로 *401 Unauthorized* 이며, 로그인
+         필요한 API에서 반복적으로 언급하지 않겠다.
 
 
 ** 회원 (승객, 기사)
@@ -83,19 +85,67 @@
     1) 다른 *배차요청 목록* 과 같은 API으로 얻은 ~member_id~ 에 맞는
        회원정보를 조회할때 사용.
     2) 요청
-       1) 로그인 필요.
        2) 요청 본문 없음.
        3) ~<member_id>~ path variable으로 정보를 얻고 싶은 회원 ID을
           지정.
     3) 응답
        1) ~200~ *OK* :: 성공. 
-			1) JSON으로 다음과 같은 응답.
-			   #+BEGIN_SRC javascript
-			   #+END_SRC
+	  1) JSON으로 다음과 같은 응답.
+	     #+BEGIN_SRC javascript
+               {
+                   "email": "foo@bar.com", // 회원 이메일.
+                   "active": true,  // 삭제되지않은 회원인가.
+                   "created_at": "2018-05-18 12:33:12",  // 최초 생성일, 문자열.
+                   "update_at": "2018-05-18 12:33:12",  // 최종 수정일, 문자열.
+               }
+	     #+END_SRC
+       2) ~400~ *BAD REQUEST* :: 실패
+	  - 해당 ~member_id~ 의 회원이 없다.
+
 
 ** 주소
 
+*** 주소 목록 ~GET /address~
+    1) 로그인한 사용자의 계정으로 등록한 배차 목적지 주소 목록.
+    2) 응답
+       1) ~200~ *OK* :: 응답JSON본문
+			#+BEGIN_SRC javascript
+                          [
+                              // 다음의 배열,
+                              {
+                                  "id": 12345,  // 주소지id
+                                  "member_id": 987,  // 이 주소지를 등록한 회원id
+                                  "address": "이젠 여기",  // 주소지 문자열
+                                  "created_at": "...",  // 최초 등록일시
+                                  "updated_at": "...",  // 최종 수정일시
+                                  "active": true  // 삭제여부
+                              }
+                          ]
+			#+END_SRC
+
 *** 주소 등록 ~PUT /address~
+    1) 새로운 배차 목적지를 등록한다.
+       - 기존에 등록해놓은 목적지가 없을 경우에 사용.
+    2) 요청
+       1) 요청본문 JSON
+	  #+BEGIN_SRC javascript
+            {
+                "address": "아까 거기"  // 문자열, 100글자. 필수.
+            }
+	  #+END_SRC
+    3) 응답
+       1) ~200~ *OK* :: 성공.
+	  1) JSON응답
+	     #+BEGIN_SRC javascript
+               {
+                   "id": 1234 // 등록한 address의 id
+               }
+	     #+END_SRC
+       2) ~400~ *BAD REQUEST* :: 실패
+	  1) 응답본문없음.
+	  2) 요청의 ~address~ 필드가 없거나,
+	  3) 요청의 주소 문자열이 100글자 초과.
+
 *** 주소 정보 ~GET /address/<address_id>~
 *** 주소 삭제 ~DELETE /address/<address_id>~
 
