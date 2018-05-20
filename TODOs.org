@@ -14,7 +14,8 @@
        API문서 쓸거다.
   2. [X] HTTP Basic 로그인 방식과 비밀번호 전달 방식 설명
 
-* TODO API-v1 Swagger YAML작성 [6/11]
+* DONE API-v1 Swagger YAML작성 [11/11]
+  CLOSED: [2018-05-20 Sun 19:13]
   1. [X] ~PUT /member~
   2. [X] ~GET /member/<member_id>~
 
@@ -23,11 +24,11 @@
   5. [X] ~GET /address/<address_id>~
   6. [X] ~DELETE /address/<address_id>~
 
-  7. [ ] ~GET /ride_request~
-  8. [ ] ~PUT /ride_request~
-  9. [ ] ~DELETE /ride_request/<ride_request_id>~
-  10. [ ] ~POST /ride_request/<ride_request_id>/accept~
-  11. [ ] ~POST /ride_request/<ride_request_id>/arrive~
+  7. [X] ~GET /ride_request~
+  8. [X] ~PUT /ride_request~
+  9. [X] ~DELETE /ride_request/<ride_request_id>~
+  10. [X] ~POST /ride_request/<ride_request_id>/accept~
+  11. [X] ~POST /ride_request/<ride_request_id>/arrive~
 
 * DONE API-v1 Swagger e2e 테스트 작성 [11/11]
   CLOSED: [2018-05-20 Sun 16:31]

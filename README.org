@@ -61,7 +61,7 @@
      1) 승객 :: ~PASSENGER~
      2) 기사 :: ~DRIVER~
 
-*** 회원 가입 ~PUT /member~
+*** 회원 가입 ~PUT /v1/member~
     1) 요청
        1) 로그인 불필요.
        2) JSON Request Body
@@ -81,7 +81,7 @@
 	  4) 잘못된 회원타입(MemberType).
 	  
 
-*** 회원 정보 ~GET /member/<member_id>~
+*** 회원 정보 ~GET /v1/member/<member_id>~
     1) 다른 *배차요청 목록* 과 같은 API으로 얻은 ~member_id~ 에 맞는
        회원정보를 조회할때 사용.
     2) 요청
@@ -124,7 +124,7 @@
                           ]
 			#+END_SRC
 
-*** 주소 등록 ~PUT /address~
+*** 주소 등록 ~PUT /v1/address~
     1) 새로운 배차 목적지를 등록한다.
        - 기존에 등록해놓은 목적지가 없을 경우에 사용.
     2) 요청
@@ -147,7 +147,7 @@
 	  2) 요청의 ~address~ 필드가 없거나,
 	  3) 요청의 주소 문자열이 100글자 초과.
 
-*** 주소 정보 ~GET /address/<address_id>~
+*** 주소 정보 ~GET /v1/address/<address_id>~
     1) 지정한 주소지 id의 정보를 얻는다.
        - 내가 등록한 주소지가 아니어도, 배차요청등을 표시하기 위해
          다른 사람의 주소지 정보도 얻을수있다.
@@ -168,7 +168,7 @@
        2) ~400~ *BAD REQUEST* :: 실패
 	    - 지정한 ~address_id~ 의 주소지가 등록되어 있지 않다.
 
-*** 주소 삭제 ~DELETE /address/<address_id>~
+*** 주소 삭제 ~DELETE /v1/address/<address_id>~
     1) 로그인한 회원이 등록한 배차요청 목적지 주소를 삭제한다.
     2) 요청
        1) Path Variable으로 삭제할 ~address_id~ 을 지정.
@@ -180,9 +180,94 @@
 
 ** 배차요청
 
-*** 배차요청 생성 ~PUT /ride_request~
-*** 배차요청 목록 ~GET /ride_request~
-*** 배차요청 취소 ~DELETE /ride_request/<ride_request_id>~
-*** 배차요청 승인 ~POST /ride_request/<ride_request_id>/accept~
-*** 배차요청 도착 ~POST /ride_request/<ride_request_id>/arrive~
+*** 배차요청의 상태
+    1) ~AVAILABLE~ :: 배차요청을 생성하였고, 배차가 가능한 상태.
+    2) ~ACCEPTED~ :: 배차 받은 상태.
+       - ~AVAILABLE~ 상태의 배차요청만 ~ACCEPTED~ 할수있다.
+    3) ~ARRIVED~ :: 배차 받아 목적지에 도착.
+       - ~ACCEPTED~ 상태의 배차요청만 ~ARRIVED~ 할수있다.
+    4) ~CANCELLED~ :: 취소한 배차요청.
+       - 모든 상태의 배차요청은 취소될 수 있다.
+
+*** 배차요청 생성 ~PUT /v1/ride_request~
+    1) 새로운 배차 요청을 생성한다.
+       - 요청을 보내는 로그인 사용자을 승객으로 하여 생성,
+       - 처음 생성시 ~status~ 은 자동적으로 ~AVAILABLE~ 으로 생성한다.
+    2) 요청
+       - 요청본문JSON
+	 #+BEGIN_SRC javascript         
+           {
+               "address_id": 12345  // 배차요청할 목적지 주소id.
+           }
+	 #+END_SRC
+    3) 응답
+       1) ~200~ *OK* :: 생성완료, 요청본문JSON
+			#+BEGIN_SRC javascript
+                          {
+                              "id": 383  // 생성한 배차요청id.
+                          }
+			#+END_SRC
+       2) ~400~ *BAD REQUEST* :: 실패, 지정한 ~address_id~ 을 찾을수없음.
+	 
+*** 배차요청 목록 ~GET /v1/ride_request~
+    1) 모든 사용자의 모든 상태인 전체 배차요청 목록.
+    2) 응답
+       1) ~200~ *OK* 
+	  #+BEGIN_SRC javascript
+            [
+                // 다음과 같은 배차요청 항목들의 배열,
+                {
+                    "id": 123545,  // 배차요청id.
+                    "passenger_id": 123,  // 배차요청한 승객id.
+                    "driver_id":  null,  // 배차요청을 승인한 기사id. (승인대기중이면 null)
+                    "address_id": 1,  // 목적지 주소id.
+                    "created_at": "...",  // 최초 생성일시.
+                    "updated_at": "...",  // 최종 수정일시.
+                    "status": "AVAILABLE"  // 배차요청의 상태.
+                },
+                ...
+            ]
+	  #+END_SRC
+
+*** 배차요청 취소 ~DELETE /v1/ride_request/<ride_request_id>~
+    1) 로그인한 사용자의 배차요청을 취소한다.
+       - 다른 사용자의 배차요청은 취소할수없다.
+    2) 요청
+       1) Path Variable ~ride_request_id~ 으로 취소하고 싶은
+          배차요청을 지정한다.
+       2) 요청본문은 없다.
+    3) 응답
+       1) ~204~ *NO CONTENT* :: 처리완료.
+       2) ~400~ *BAD REQUEST* :: 해당 배차요청없음.
+       3) ~401~ *UNAUTHORIZED* :: 해당 배차요청은 다른 사용자의
+            배차요청.
+
+*** 배차요청 승인 ~POST /v1/ride_request/<ride_request_id>/accept~
+    1) 기사인 회원이 다른 회원이 생성한 배차요청을 승인한다.
+       - 자신이 생성한 배차요청은 승인할 수 없다.
+       - ~MemberType~ 이 ~DRIVER~ 인 회원만 승인할 수 있다.
+    2) 요청
+       1) Path Variable ~ride_request_id~ 으로 승인할 배차요청을 지정.
+       2) 요청본문은 없다.
+    3) 응답
+       1) ~204~ *NO CONTENT* :: 승인완료.
+       2) ~400~ *BAD REQUEST* :: 해당 배차요청이 없음.
+       3) ~401~ *UNAUTHORIZED* :: API호출하는 사용자가 ~DRIVER~ 이
+            아니거나, 지정한 배차요청이 대기상태의(~AVAILABLE~) 요청이 아님.
+
+*** 배차요청 도착 ~POST /v1/ride_request/<ride_request_id>/arrive~
+    1) 기사 자신이 승인했었던 배차요청을 목적지에 도착했을때, 완료로
+       처리.
+       - 자신이 승인한 배차요청만 도착처리가 가능.
+    2) 요청
+       1) Path Variable ~ride_request_id~ 으로 도착처리할 배차요청을 지정.
+       2) 요청본문은 없다.
+    3) 응답
+       1) ~204~ *NO CONTENT* :: 도착처리 완료.
+       2) ~400~ *BAD REQUEST*
+	  1) 해당 배차요청이 없거나,
+	  2) 승인상태의 배차요청이 아님.
+       3) ~401~ *UNAUTHORIZED*
+	  1) API호출한 회원이 ~DRIVER~ 타입이 아님.
+	  2) 내가 승인하여 처리한 배차요청이 아님.
 
