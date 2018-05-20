@@ -52,7 +52,7 @@
                    https://github.com/ageldama/untertaxi-api-flask/blob/master/misc/new-user-and-ride-request.py#L30
    3) 이하 로그인이 필요한 API은 항상 별도로 표시하지않고,
       1) 로그인이 불필요한 경우에만 표기한다.
-      2) 로그인 실패시 HTTP응답 코드로 *401 Unauthorized* 이며, 로그인
+      2) 로그인 실패시 HTTP응답 코드로 *401 UNAUTHORIZED* 이며, 로그인
          필요한 API에서 반복적으로 언급하지 않겠다.
 
 
@@ -73,7 +73,7 @@
           }
 	  #+END_SRC
     2) 응답
-       1) ~201~ *NO CONTENT* :: 성공. 응답본문없음.
+       1) ~201~ *CREATED* :: 성공. 응답본문없음.
        2) ~400~ *BAD REQUEST* :: 실패. 응답본문없음.
 	  1) 잘못된 이메일 양식.
 	  2) 혹은 이미 가입된 이메일 주소.
@@ -107,6 +107,7 @@
 
 *** 주소 목록 ~GET /address~
     1) 로그인한 사용자의 계정으로 등록한 배차 목적지 주소 목록.
+       - 다른 사람이 등록한 주소지는 제외된다.
     2) 응답
        1) ~200~ *OK* :: 응답JSON본문
 			#+BEGIN_SRC javascript
@@ -147,7 +148,35 @@
 	  3) 요청의 주소 문자열이 100글자 초과.
 
 *** 주소 정보 ~GET /address/<address_id>~
+    1) 지정한 주소지 id의 정보를 얻는다.
+       - 내가 등록한 주소지가 아니어도, 배차요청등을 표시하기 위해
+         다른 사람의 주소지 정보도 얻을수있다.
+    2) 요청
+       1) Path Variable으로 ~address_id~ 주소지 id 지정.
+    3) 응답
+       1) ~200~ *OK* :: 응답JSON본문
+			#+BEGIN_SRC javascript
+                          {
+                              "id": 12345,  // 주소지id
+                              "member_id": 987,  // 이 주소지를 등록한 회원id
+                              "address": "이젠 여기",  // 주소지 문자열
+                              "created_at": "...",  // 최초 등록일시
+                              "updated_at": "...",  // 최종 수정일시
+                              "active": true  // 삭제여부
+                          }
+			#+END_SRC
+       2) ~400~ *BAD REQUEST* :: 실패
+	    - 지정한 ~address_id~ 의 주소지가 등록되어 있지 않다.
+
 *** 주소 삭제 ~DELETE /address/<address_id>~
+    1) 로그인한 회원이 등록한 배차요청 목적지 주소를 삭제한다.
+    2) 요청
+       1) Path Variable으로 삭제할 ~address_id~ 을 지정.
+    3) 응답
+       1) ~204~ *NO CONTENT* :: 성공적으로 삭제. 응답본문없음.
+       2) ~400~ *BAD REQUEST* :: 해당 ~address_id~ 의 주소 없음.
+       3) ~401~ *UNAUTHORIZED* :: 지정한 주소지가 요청한 사람의 회원과
+            같지 않아 삭제를 거부.
 
 ** 배차요청
 
